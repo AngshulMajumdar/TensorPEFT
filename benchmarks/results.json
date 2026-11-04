@@ -1,0 +1,201 @@
+{
+ "setup": {
+  "base_model": "GPT-2 124M (openai-community/gpt2)",
+  "data": "Bengali news (github.com/soham96/Bengali_news_classifier @4c2a51b), 3M train tokens, 400 held-out articles",
+  "training": "300 AdamW steps, batch 8 x 128 tokens, fp32, identical batches for all methods",
+  "metric": "validation cross-entropy, nats/token, 64 x 128 tokens; lower is better",
+  "base_val": 1.7079,
+  "learning_rates": {
+   "TensorPEFT": "3e-3 (alpha_scale 33.3), 10 warm-up steps",
+   "LoRA/QLoRA": "1e-3",
+   "(IA)3": "3e-3",
+   "VeRA": "1e-2",
+   "prompt tuning": "3e-2",
+   "LayerNorm tuning": "1e-3",
+   "BitFit": "1e-3"
+  }
+ },
+ "tiers_seed0": [
+  {
+   "budget": "~1.5k",
+   "method": "TensorPEFT (1 attention atom)",
+   "params": 1553,
+   "val": 1.4605
+  },
+  {
+   "budget": "~1.5k",
+   "method": "prompt tuning (1 token)",
+   "params": 768,
+   "val": 1.4928
+  },
+  {
+   "budget": "~1.5k",
+   "method": "LayerNorm tuning (final LN)",
+   "params": 1536,
+   "val": 1.6
+  },
+  {
+   "budget": "~9k",
+   "method": "TensorPEFT (3 atoms)",
+   "params": 9259,
+   "val": 1.3271
+  },
+  {
+   "budget": "~9k",
+   "method": "prompt tuning (12 tokens)",
+   "params": 9216,
+   "val": 1.3704
+  },
+  {
+   "budget": "~9k",
+   "method": "LayerNorm tuning (last 3 layers)",
+   "params": 9216,
+   "val": 1.4073
+  },
+  {
+   "budget": "~9k",
+   "method": "LoRA r=1 (q,v, last 3 layers)",
+   "params": 9216,
+   "val": 1.4299
+  },
+  {
+   "budget": "~9k",
+   "method": "(IA)3 (values)",
+   "params": 9216,
+   "val": 1.4315
+  },
+  {
+   "budget": "~37k",
+   "method": "TensorPEFT (12 atoms)",
+   "params": 37036,
+   "val": 1.2552
+  },
+  {
+   "budget": "~37k",
+   "method": "LayerNorm tuning (all)",
+   "params": 38400,
+   "val": 1.253
+  },
+  {
+   "budget": "~37k",
+   "method": "LoRA r=1 (q,v)",
+   "params": 36864,
+   "val": 1.3181
+  },
+  {
+   "budget": "~37k",
+   "method": "prompt tuning (48 tokens)",
+   "params": 36864,
+   "val": 1.327
+  },
+  {
+   "budget": "~37k",
+   "method": "QLoRA r=1 (q,v), NF4 base",
+   "params": 36864,
+   "val": 1.3352
+  },
+  {
+   "budget": "~37k",
+   "method": "VeRA r=256 (q,v)",
+   "params": 24576,
+   "val": 1.3927
+  },
+  {
+   "budget": "~55k",
+   "method": "TensorPEFT (18 atoms)",
+   "params": 55554,
+   "val": 1.2309
+  },
+  {
+   "budget": "~55k",
+   "method": "(IA)3 (keys, values, MLP)",
+   "params": 55296,
+   "val": 1.2894
+  },
+  {
+   "budget": "~83k",
+   "method": "BitFit (all biases)",
+   "params": 82944,
+   "val": 1.3263
+  }
+ ],
+ "larger_budgets_lora": [
+  {
+   "method": "LoRA r=1 (q,k,v,o,MLP-in)",
+   "params": 119808,
+   "val": 1.1887
+  },
+  {
+   "method": "LoRA r=1 (all matrices)",
+   "params": 165888,
+   "val": 1.1763
+  },
+  {
+   "method": "LoRA r=4 (all matrices)",
+   "params": 663552,
+   "val": 1.1324
+  }
+ ],
+ "schedule_ablation": [
+  {
+   "budget": "~37k",
+   "atoms_at_start": 1.2552,
+   "atoms_added_in_stages": 1.3083
+  },
+  {
+   "budget": "~55k",
+   "atoms_at_start": 1.2309,
+   "atoms_added_in_stages": 1.3118
+  }
+ ],
+ "three_seeds": [
+  {
+   "budget": "~9k",
+   "TensorPEFT": [
+    1.3271,
+    1.3261,
+    1.3203
+   ],
+   "baseline": "prompt tuning (12 tokens)",
+   "baseline_vals": [
+    1.3704,
+    1.3773,
+    1.3576
+   ],
+   "mean_diff": -0.0439,
+   "p_paired_t": 0.008
+  },
+  {
+   "budget": "~37k",
+   "TensorPEFT": [
+    1.2552,
+    1.2664,
+    1.2459
+   ],
+   "baseline": "LayerNorm tuning (all)",
+   "baseline_vals": [
+    1.253,
+    1.2516,
+    1.2466
+   ],
+   "mean_diff": 0.0054,
+   "p_paired_t": 0.372
+  },
+  {
+   "budget": "~55k",
+   "TensorPEFT": [
+    1.2309,
+    1.2557,
+    1.2239
+   ],
+   "baseline": "(IA)3 (keys, values, MLP)",
+   "baseline_vals": [
+    1.2894,
+    1.2899,
+    1.2845
+   ],
+   "mean_diff": -0.0511,
+   "p_paired_t": 0.026
+  }
+ ]
+}
